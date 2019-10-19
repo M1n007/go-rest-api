@@ -7,9 +7,16 @@ type Users struct {
 	LastName  string `form:"lastname" json:"lastname"`
 }
 
-//Response models
-type Response struct {
+// ResponseGetUsers ...
+type ResponseGetUsers struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 	Data    []Users
+}
+
+// ResponseCreateUsers ...
+type ResponseCreateUsers struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+	Data    string
 }

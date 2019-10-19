@@ -6,19 +6,16 @@ import (
 	"log"
 	"net/http"
 
-	DB "github.com/M1n007/go-rest-api/helpers/database/mysql"
+	helpers "github.com/M1n007/go-rest-api/repository/users/utils"
 )
 
 // ReturnAllUsers function
 func ReturnAllUsers(w http.ResponseWriter, r *http.Request) {
 	var users Users
-	var arr_user []Users
-	var response Response
+	var arrUser []Users
+	var response ResponseGetUsers
 
-	db := DB.Connect()
-	defer db.Close()
-
-	rows, err := db.Query("SELECT * FROM person")
+	rows, err := GetAllUsers()
 
 	if err != nil {
 		log.Print(err)
@@ -28,13 +25,13 @@ func ReturnAllUsers(w http.ResponseWriter, r *http.Request) {
 		if err := rows.Scan(&users.Id, &users.FirstName, &users.LastName); err != nil {
 			log.Fatal((err.Error()))
 		} else {
-			arr_user = append(arr_user, users)
+			arrUser = append(arrUser, users)
 		}
 	}
 
-	response.Status = 1
+	response.Status = 200
 	response.Message = "Success"
-	response.Data = arr_user
+	response.Data = arrUser
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
@@ -42,15 +39,9 @@ func ReturnAllUsers(w http.ResponseWriter, r *http.Request) {
 
 // CreateUser function
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	// var users Users
-	var arr_user []Users
-	var response Response
+	var response ResponseCreateUsers
 
-	db := DB.Connect()
-	defer db.Close()
-
-	stmt, err := db.Prepare("INSERT INTO person(id,first_name,last_name) VALUES(?,?,?)")
+	stmt, err := AddUsers()
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -78,9 +69,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err.Error())
 	}
 
-	response.Status = 1
-	response.Message = "Success"
-	response.Data = arr_user
+	//converting keyVal map to jsonString
+	newData := helpers.JsonStringConvert(keyVal)
 
+	response.Status = 200
+	response.Message = "Success Add Users!"
+	response.Data = newData
+
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }

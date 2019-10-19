@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
+	fmt.Printf("Server is running on port 9000")
 	server.Init()
-	fmt.Println("Server is running on port 9000")
 }
